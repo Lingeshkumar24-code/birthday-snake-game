@@ -76,14 +76,19 @@
   }
   /* Popup */
   .popup{
-    position:fixed;
-    inset:0;
-    display:grid;
-    place-items:center;
-    pointer-events:none;
-    opacity:0;
-    transition:opacity .22s;
-    z-index:50
+      position:fixed;
+      inset:0;
+      display:none; /* Hide by default */
+      place-items:center;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity .22s;
+      z-index:50
+  }
+  .popup.show{
+      display:grid; /* Show only when active */
+      pointer-events:auto;
+      opacity:1
   }
   .popup.show{
     pointer-events:auto;
@@ -114,17 +119,22 @@
   }
   .pop-sub{
     opacity:.9;
-    margin-top:6px;
-    font-size:.95rem;
-    color:#ffdfe9
-  }
-  /* Finale */
   .finale{
-    position:fixed;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+      position:fixed;
+      inset:0;
+      display:none; /* Hide by default */
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity .3s;
+      z-index:60
+  }
+  .finale.show{
+      display:flex; /* Show only when active */
+      pointer-events:auto;
+      opacity:1
+  }
     pointer-events:none;
     opacity:0;
     transition:opacity .3s;
@@ -402,4 +412,5 @@ timer = setInterval(tick, speed);
 </script>
 </body>
 </html>
+
 

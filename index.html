@@ -21,17 +21,10 @@
     overflow: hidden;
     touch-action: manipulation;
   }
+  .creator{ text-align:center; margin:6px 0; color:#ffd166; font-weight:bold; font-size:0.9rem; }
   .wrap{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    max-width:100%;
-    max-height: calc(100vh - 120px);
-    margin:0 auto;
-    padding:8px;
-    box-sizing:border-box;
-    border-radius:18px;
+    flex:1; display:flex; flex-direction:column; justify-content:space-between;
+    width:100%; margin:0 auto; padding:8px; border-radius:18px;
     background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
     border:1px solid rgba(255,255,255,0.03);
     box-shadow:0 20px 50px rgba(0,0,0,0.6);
@@ -42,12 +35,8 @@
   .subtitle{font-size:.83rem;opacity:.85}
   .score{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);font-weight:600}
   .canvas-wrap{
-    flex:1;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:4px 0;
-    min-height: 200px;
+    flex:1; display:flex; justify-content:center; align-items:center;
+    padding:4px 0; min-height:200px;
   }
   canvas{
     border-radius:12px;
@@ -59,90 +48,32 @@
     box-shadow:inset 0 6px 18px rgba(0,0,0,0.5)
   }
   .controls{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:4px
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:8px; margin-top:4px
   }
   .btn{
-    background:var(--glass);
-    border:1px solid rgba(255,255,255,0.03);
-    color:inherit;
-    padding:8px 12px;
-    border-radius:10px;
-    cursor:pointer
+    background:var(--glass); border:1px solid rgba(255,255,255,0.03);
+    color:inherit; padding:8px 12px; border-radius:10px; cursor:pointer
   }
   /* Popup */
-  .popup{
-      position:fixed;
-      inset:0;
-      display:none; /* Hide by default */
-      place-items:center;
-      pointer-events:none;
-      opacity:0;
-      transition:opacity .22s;
-      z-index:50
-  }
-  .popup.show{
-      display:grid; /* Show only when active */
-      pointer-events:auto;
-      opacity:1
-  }
-  .popup.show{
-    pointer-events:auto;
-    opacity:1
-  }
+  .popup{ position:fixed; inset:0; display:none; place-items:center; pointer-events:none; opacity:0; transition:opacity .22s; z-index:50 }
+  .popup.show{ display:grid; pointer-events:auto; opacity:1 }
   .card-pop{
-    width:min(92%,420px);
-    max-width:380px;
+    width:min(92%,420px); max-width:380px;
     background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-    border-radius:14px;
-    padding:12px;
-    border:1px solid rgba(255,255,255,0.06);
-    backdrop-filter:blur(6px);
-    box-shadow:0 14px 40px rgba(0,0,0,0.6)
+    border-radius:14px; padding:12px; border:1px solid rgba(255,255,255,0.06);
+    backdrop-filter:blur(6px); box-shadow:0 14px 40px rgba(0,0,0,0.6)
   }
-  .card-pop img{
-    width:100%;
-    height:210px;
-    object-fit:cover;
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,0.04)
+  .card-pop img{ width:100%; height:210px; object-fit:cover; border-radius:10px; border:1px solid rgba(255,255,255,0.04) }
+  .pop-title{ font-family:system-ui; font-size:1.3rem; color:#ffe9f3; margin-top:8px }
+  @media (max-width:420px){
+    .card-pop img{height:160px}
+    .finale .text{font-size:2.1rem}
+    .title{font-size:0.9rem}
+    .subtitle{font-size:0.7rem}
   }
-  .pop-title{
-    font-family:system-ui;
-    font-size:1.3rem;
-    color:#ffe9f3;
-    margin-top:8px
-  }
-  .pop-sub{
-    opacity:.9;
-  .finale{
-      position:fixed;
-      inset:0;
-      display:none; /* Hide by default */
-      align-items:center;
-      justify-content:center;
-      pointer-events:none;
-      opacity:0;
-      transition:opacity .3s;
-      z-index:60
-  }
-  .finale.show{
-      display:flex; /* Show only when active */
-      pointer-events:auto;
-      opacity:1
-  }
-    pointer-events:none;
-    opacity:0;
-    transition:opacity .3s;
-    z-index:60
-  }
-  .finale.show{
-    opacity:1
-  }
+  .finale{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; pointer-events:none; opacity:0; transition:opacity .3s; z-index:60 }
+  .finale.show{ display:flex; pointer-events:auto; opacity:1 }
   .finale .text{
     font-family: system-ui;
     font-size:2.6rem;
@@ -151,19 +82,6 @@
     background-clip:text;
     color:transparent;
     text-shadow:0 6px 30px rgba(0,0,0,0.6)
-  }
-  @media (max-width:420px){
-    .card-pop img{height:160px}
-    .finale .text{font-size:2.1rem}
-    .title{font-size:0.9rem}
-    .subtitle{font-size:0.7rem}
-  }
-  .creator{
-    text-align:center;
-    margin:6px 0;
-    color:#ffd166;
-    font-weight:bold;
-    font-size:0.9rem;
   }
 </style>
 </head>
@@ -219,23 +137,18 @@ let grid = 18;
 function fitCanvas(){
   const headerH = document.querySelector('.top').offsetHeight;
   const controlsH = document.querySelector('.controls').offsetHeight;
-  const availableHeight = window.innerHeight - headerH - controlsH - 60;
-  
-  // Set minimum dimensions
-  const minWidth = Math.min(window.innerWidth - 16, 380);
-  const minHeight = Math.max(200, availableHeight);
-  
-  gameCanvas.width = minWidth;
-  gameCanvas.height = minHeight;
-  confCanvas.width = minWidth;
-  confCanvas.height = minHeight;
-  
-  // Recalculate grid size based on available space
-  grid = Math.min(18, Math.floor(Math.min(minWidth/12, minHeight/14)));
+  const availableHeight = window.innerHeight - headerH - controlsH - 20;
+  const maxWidth = Math.min(window.innerWidth - 16, 380);
+  const height = Math.max(200, availableHeight);
+  gameCanvas.width = maxWidth;
+  gameCanvas.height = height;
+  confCanvas.width = maxWidth;
+  confCanvas.height = height;
+  grid = Math.min(18, Math.floor(Math.min(maxWidth/12, height/14)));
 }
 window.addEventListener('resize', fitCanvas);
 
-let snake = { body: [{x:5,y:8},{x:4,y:8},{x:3,y:8}], dir: {x:1,y:0} };
+let snake;
 let apple = null;
 let timer = null;
 let baseSpeed = 140;
@@ -312,7 +225,21 @@ function showPopupFor(idx){
   setTimeout(()=> { popup.classList.remove('show'); }, 2000);
 }
 
-function placeRandomApple(){
+function initSnake() {
+  const c = cells();
+  const startX = Math.floor(c.x / 2);
+  const startY = Math.floor(c.y / 2);
+  snake = {
+    body: [
+      { x: startX, y: startY },
+      { x: startX - 1, y: startY },
+      { x: startX - 2, y: startY }
+    ],
+    dir: { x: 1, y: 0 }
+  };
+}
+
+function placeRandomApple() {
   const c = cells();
   let gx, gy;
   do {
@@ -323,6 +250,16 @@ function placeRandomApple(){
   highlight = 28;
 }
 
+function faceTowardApple() {
+  if (!apple) return;
+  const head = snake.body[0];
+  if (Math.abs(apple.x - head.x) > Math.abs(apple.y - head.y)) {
+    snake.dir = { x: apple.x > head.x ? 1 : -1, y: 0 };
+  } else {
+    snake.dir = { x: 0, y: apple.y > head.y ? 1 : -1 };
+  }
+}
+
 function tick(){
   if(!running) return;
   if(autoMode) snake.dir = chooseDirTowardApple();
@@ -331,7 +268,6 @@ function tick(){
   head.x = (head.x + c.x) % c.x; head.y = (head.y + c.y) % c.y;
   if(snake.body.slice(1).some(p => p.x===head.x && p.y===head.y)){ gameOver(); return; }
   snake.body.unshift(head);
-
   if(apple && head.x===apple.x && head.y===apple.y){
     score++; scoreEl.textContent = 'Score: ' + score;
     autoMode = false;
@@ -342,7 +278,6 @@ function tick(){
   } else {
     snake.body.pop();
   }
-
   ctx.clearRect(0,0,gameCanvas.width, gameCanvas.height);
   confCtx.clearRect(0,0,confCanvas.width, confCanvas.height);
   for(let x=0;x<gameCanvas.width/grid;x++){
@@ -382,11 +317,13 @@ gameCanvas.addEventListener('touchstart', function(e) {
 
 document.getElementById('reset').addEventListener('click', () => {
   clearInterval(timer);
-  snake = { body: [{x:5,y:8},{x:4,y:8},{x:3,y:8}], dir: {x:1,y:0} };
+  initSnake();
   score = 0; scoreEl.textContent = 'Score: 0';
   running = true; autoMode = false; highlight = 0; apple = null;
   document.getElementById('popup').classList.remove('show'); document.getElementById('finale').classList.remove('show');
   fitCanvas();
+  placeRandomApple();
+  faceTowardApple();
   timer = setInterval(tick, speed);
 });
 
@@ -407,10 +344,14 @@ document.body.appendChild(audio);
 audio.play();
 
 fitCanvas();
+initSnake();
 placeRandomApple();
+faceTowardApple();
 timer = setInterval(tick, speed);
 </script>
 </body>
 </html>
+
+
 
 

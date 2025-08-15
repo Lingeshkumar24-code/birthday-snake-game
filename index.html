@@ -9,15 +9,37 @@
     --bg1:#07102a; --bg2:#041028; --neon:#ff6b9e; --gold:#ffd166; --glass: rgba(255,255,255,0.04);
   }
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;color:#eef3ff;background:radial-gradient(800px 600px at 10% 10%, #10203b 0%, #071025 35%, #04101b 100%);}
-  .wrap{max-width:420px;margin:10px auto;padding:16px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);box-shadow:0 20px 50px rgba(0,0,0,0.6)}
-  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  html,body{
+    height:100%;
+    margin:0;
+    padding:0;
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+    color:#eef3ff;
+    background:radial-gradient(800px 600px at 10% 10%, #10203b 0%, #071025 35%, #04101b 100%);
+    display:flex;
+    flex-direction:column;
+  }
+  .wrap{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    max-width:100%;
+    margin:0 auto;
+    padding:8px;
+    box-sizing:border-box;
+    border-radius:18px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow:0 20px 50px rgba(0,0,0,0.6);
+  }
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
   .title{font-weight:700;font-size:1.05rem}
   .subtitle{font-size:.83rem;opacity:.85}
   .score{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);font-weight:600}
-  .canvas-wrap{position:relative;display:flex;justify-content:center;align-items:center;padding:6px 0}
+  .canvas-wrap{flex:1;display:flex;justify-content:center;align-items:center;padding:4px 0}
   canvas{border-radius:12px;background:linear-gradient(180deg,#06102b,#07102b);display:block;width:100%;height:auto;max-width:380px;box-shadow:inset 0 6px 18px rgba(0,0,0,0.5)}
-  .controls{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+  .controls{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:4px}
   .btn{background:var(--glass);border:1px solid rgba(255,255,255,0.03);color:inherit;padding:8px 12px;border-radius:10px;cursor:pointer}
   /* Popup */
   .popup{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .22s;z-index:50}
@@ -30,11 +52,11 @@
   .finale{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .3s;z-index:60}
   .finale.show{opacity:1}
   .finale .text{font-family: system-ui; font-size:2.6rem;background:linear-gradient(90deg,#ffd166,#ff6b9e,#9b5cff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 6px 30px rgba(0,0,0,0.6)}
-  /* small screens */
   @media (max-width:420px){ .card-pop img{height:160px} .finale .text{font-size:2.1rem} }
 </style>
 </head>
 <body>
+  <div style="text-align:center;margin:6px 0;color:#ffd166;font-weight:bold;">Created by Lingesh</div>
   <div class="wrap" role="application" aria-label="Birthday Snake Game">
     <div class="top">
       <div>
@@ -55,6 +77,7 @@
       <button id="mute" class="btn">Music ♪</button>
     </div>
   </div>
+  <div style="text-align:center;margin:6px 0;color:#ffd166;font-weight:bold;">Made by Lingesh</div>
 
   <!-- popup + finale -->
   <div id="popup" class="popup" aria-hidden="true">
@@ -67,10 +90,6 @@
   <div id="finale" class="finale" aria-hidden="true"><div class="text">Happy Birthday 🎉</div></div>
 
 <script>
-/* ====================
-   CONFIG - REPLACE IMAGES & MESSAGES
-   (fixed-order: message 1..5)
-   ==================== */
 const messages = [
   { text: "Remember our first silly day — that laugh still lives in me.", img: "img1.jpg" },
   { text: "The laughter we shared feels like warm sunlight on old photographs.", img: "img2.jpg" },
@@ -80,75 +99,45 @@ const messages = [
 ];
 const MAX_EATS = 5;
 
-/* ====================
-   Canvas sizing
-   ==================== */
 const gameCanvas = document.getElementById('gameCanvas');
 const ctx = gameCanvas.getContext('2d');
 const confCanvas = document.getElementById('confettiCanvas');
 const confCtx = confCanvas.getContext('2d');
 
-let grid = 18; // cell size
+let grid = 18;
 function fitCanvas(){
-  const maxW = Math.min(window.innerWidth - 36, 380);
-  const maxH = Math.min(window.innerHeight - 160, 560);
+  const headerH = document.querySelector('.top').offsetHeight;
+  const controlsH = document.querySelector('.controls').offsetHeight;
+  const availableHeight = window.innerHeight - headerH - controlsH - 60;
+  const maxW = Math.min(window.innerWidth - 16, 380);
+  const maxH = Math.max(availableHeight, 200);
   const cols = Math.max(12, Math.floor(maxW / grid));
   const rows = Math.max(14, Math.floor(maxH / grid));
   gameCanvas.width = cols * grid;
   gameCanvas.height = rows * grid;
   confCanvas.width = gameCanvas.width;
   confCanvas.height = gameCanvas.height;
-  // position confCanvas to overlap
-  const rect = gameCanvas.getBoundingClientRect();
-  confCanvas.style.left = rect.left + window.scrollX + 'px';
-  confCanvas.style.top = rect.top + window.scrollY + 'px';
-  confCanvas.style.width = rect.width + 'px';
-  confCanvas.style.height = rect.height + 'px';
 }
 window.addEventListener('resize', fitCanvas);
 
-/* ====================
-   Game state
-   ==================== */
 let snake = { body: [{x:5,y:8},{x:4,y:8},{x:3,y:8}], dir: {x:1,y:0} };
-let apple = null;         // apple position {x,y} or null until player taps
-let waitingForTap = true; // player must tap to place the first apple
+let apple = null;
 let timer = null;
-let baseSpeed = 140;      // normal speed
+let baseSpeed = 140;
 let speed = baseSpeed;
 let running = true;
 let score = 0;
-let autoMode = false;     // when true snake chooses dir toward apple each tick
-let highlight = 0;        // apple glow frames
+let autoMode = false;
+let highlight = 0;
 const scoreEl = document.getElementById('score');
 
-/* helpers */
 function rnd(n){ return Math.floor(Math.random()*n); }
 function cells(){ return { x: Math.floor(gameCanvas.width / grid), y: Math.floor(gameCanvas.height / grid) }; }
-
-/* spawn apple at a grid cell chosen by player (the player taps) */
-/* draw apple with pulsing halo on confetti canvas */
-function placeAppleAt(clientX, clientY){
-  if(autoMode) return false; // ignore taps while snake is moving
-  const rect = gameCanvas.getBoundingClientRect();
-  const x = (clientX - rect.left) * (gameCanvas.width / rect.width);
-  const y = (clientY - rect.top) * (gameCanvas.height / rect.height);
-  const gx = Math.floor(x / grid);
-  const gy = Math.floor(y / grid);
-  // if tapped cell intersects snake body, ignore (ask player to tap elsewhere)
-  if(snake.body.some(p => p.x===gx && p.y===gy)) return false;
-  apple = { x: gx, y: gy };
-  highlight = 28;
-  autoMode = true;
-  waitingForTap = false;
-  return true;
-}
 
 function drawApple(){
   if(!apple) return;
   const cx = apple.x * grid + grid/2;
   const cy = apple.y * grid + grid/2;
-  // halo on confetti layer
   if(highlight > 0){
     confCtx.beginPath();
     const r = grid*0.8 + (28 - highlight) * 0.6;
@@ -156,19 +145,16 @@ function drawApple(){
     confCtx.arc(cx, cy, r, 0, Math.PI*2);
     confCtx.fill();
   }
-  // core
   ctx.beginPath();
   ctx.fillStyle = '#ffd166';
   ctx.arc(cx, cy, grid*0.42, 0, Math.PI*2);
   ctx.fill();
-  // sparkle
   ctx.beginPath();
   ctx.fillStyle = 'rgba(255,255,255,0.85)';
   ctx.arc(cx - grid*0.12, cy - grid*0.14, grid*0.08, 0, Math.PI*2);
   ctx.fill();
 }
 
-/* snake drawing with rounded segments + eyes */
 function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 function drawSnake(){
   snake.body.forEach((p,i) => {
@@ -179,61 +165,8 @@ function drawSnake(){
     ctx.fillStyle = (i===0) ? '#ff9bb8' : '#bff8ff';
     roundRect(ctx, px+4, py+4, grid-8, grid-8, 4); ctx.fill();
   });
-  // eyes
-  const h = snake.body[0];
-  const cx = h.x*grid + grid/2, cy = h.y*grid + grid/2;
-  const ox = grid*0.18, oy = grid*0.08, r = grid*0.07;
-  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx-ox, cy-oy, r,0,Math.PI*2); ctx.arc(cx+ox, cy-oy, r,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(cx-ox, cy-oy+1, r*0.55,0,Math.PI*2); ctx.arc(cx+ox, cy-oy+1, r*0.55,0,Math.PI*2); ctx.fill();
 }
 
-/* game tick */
-function tick(){
-  if(!running) return;
-  if(autoMode){
-    snake.dir = chooseDirTowardApple();
-  }
-  const head = { x: snake.body[0].x + snake.dir.x, y: snake.body[0].y + snake.dir.y };
-  const c = cells();
-  head.x = (head.x + c.x) % c.x; head.y = (head.y + c.y) % c.y;
-  // collision with self
-  if(snake.body.slice(1).some(p => p.x===head.x && p.y===head.y)){ gameOver(); return; }
-  snake.body.unshift(head);
-
-  // eat?
-  if(apple && head.x===apple.x && head.y===apple.y){
-    score++; scoreEl.textContent = 'Score: ' + score;
-    autoMode = false;
-    showPopupFor(score-1);
-    apple = null;
-    // if finished
-    if(score >= MAX_EATS){
-      clearInterval(timer);
-      setTimeout(()=> { finalWish(); }, 900);
-      return;
-    }
-    // else wait for player to tap next spot
-  } else {
-    snake.body.pop();
-  }
-
-  // render
-  ctx.clearRect(0,0,gameCanvas.width, gameCanvas.height);
-  confCtx.clearRect(0,0,confCanvas.width, confCanvas.height);
-
-  // subtle grid background
-  for(let x=0;x<gameCanvas.width/grid;x++){
-    for(let y=0;y<gameCanvas.height/grid;y++){
-      ctx.fillStyle = ((x+y)%2) ? '#061126' : '#071028';
-      ctx.fillRect(x*grid, y*grid, grid, grid);
-    }
-  }
-
-  if(highlight>0) { drawApple(); highlight--; } else drawApple();
-  drawSnake();
-}
-
-/* path choosing (wrapped shortest) and avoid immediate self collision */
 function wrapDelta(from,to,mod){
   const d = (to - from + mod) % mod;
   const right = d; const left = (mod - d) % mod;
@@ -255,198 +188,93 @@ function chooseDirTowardApple(){
   return snake.dir;
 }
 
-/* popup */
-const popup = document.getElementById('popup');
-const popupImg = document.getElementById('popupImg');
-const popupMsg = document.getElementById('popupMsg');
-const popupSub = document.getElementById('popupSub');
-
 function showPopupFor(idx){
   const m = messages[Math.min(idx, messages.length-1)];
   popupImg.src = m.img || '';
   popupMsg.textContent = m.text || 'A memory';
-  popupSub.textContent = `Memory ${idx+1} of ${MAX_EATS} • Tap anywhere to continue`;
+  popupSub.textContent = `Memory ${idx+1} of ${MAX_EATS}`;
   popup.classList.add('show');
-  // auto-hide after 2200ms
-  setTimeout(()=> { popup.classList.remove('show'); }, 2200);
-}
-popup.addEventListener('click', ()=> { popup.classList.remove('show'); });
-
-/* final wish + confetti */
-const finaleEl = document.getElementById('finale');
-let confetti = [];
-function finalWish(){
-  finaleEl.classList.add('show');
-  confettiBurst();
+  setTimeout(()=> { popup.classList.remove('show'); }, 2000);
 }
 
-/* confetti */
-function confettiBurst(){
-  confetti = [];
-  const N = 160;
-  for(let i=0;i<N;i++){
-    confetti.push({
-      x: gameCanvas.width/2 + (Math.random()-0.5)*gameCanvas.width*0.6,
-      y: gameCanvas.height*0.3 + (Math.random()-0.5)*100,
-      vx: (Math.random()-0.5)*6,
-      vy: Math.random()*-6 - 2,
-      size: Math.random()*6+4,
-      color: `hsl(${Math.random()*360} 90% 60%)`,
-      life: Math.random()*90 + 70
-    });
-  }
-  let t = 0;
-  const id = setInterval(()=> {
-    confCtx.clearRect(0,0,confCanvas.width, confCanvas.height);
-    confetti.forEach(p=>{
-      p.vy += 0.18; p.x += p.vx; p.y += p.vy; p.life--;
-      confCtx.fillStyle = p.color;
-      confCtx.fillRect(p.x, p.y, p.size, p.size*0.6);
-    });
-    confetti = confetti.filter(p => p.life>0 && p.y < confCanvas.height + 120);
-    t++;
-    if(t>260 || confetti.length === 0){ clearInterval(id); }
-  }, 16);
-}
-
-/* input: tap to place apple; ignore if tapping snake body or while snake is moving */
-function onCanvasTap(clientX, clientY){
-  if(autoMode) return; // snake is moving toward current apple
-  const rect = gameCanvas.getBoundingClientRect();
-  const x = (clientX - rect.left) * (gameCanvas.width / rect.width);
-  const y = (clientY - rect.top) * (gameCanvas.height / rect.height);
-  const gx = Math.floor(x / grid);
-  const gy = Math.floor(y / grid);
-  // ignore taps outside or on snake
-  if(gx < 0 || gy < 0 || gx >= cells().x || gy >= cells().y) return;
-  if(snake.body.some(p => p.x===gx && p.y===gy)) return; // tell player to tap elsewhere (silently ignore)
-  // place apple and start auto
-  apple = { x: gx, y: gy };
-  highlight = 28;
-  autoMode = true;
-}
-
-gameCanvas.addEventListener('click', e => { onCanvasTap(e.clientX, e.clientY); });
-gameCanvas.addEventListener('touchend', e => { const t = e.changedTouches[0]; onCanvasTap(t.clientX, t.clientY); }, {passive:true});
-
-/* swipe support to control direction manually if user wants */
-let touchStart = null;
-gameCanvas.addEventListener('touchstart', e => { touchStart = e.changedTouches[0]; }, {passive:true});
-gameCanvas.addEventListener('touchend', e => {
-  if(!touchStart) return;
-  const t = e.changedTouches[0];
-  const dx = t.clientX - touchStart.clientX, dy = t.clientY - touchStart.clientY;
-  if(Math.abs(dx) > Math.abs(dy)){
-    if(dx > 18) setDir('right'); else if(dx < -18) setDir('left');
-  } else {
-    if(dy > 18) setDir('down'); else if(dy < -18) setDir('up');
-  }
-  touchStart = null;
-}, {passive:true});
-
-document.addEventListener('keydown', e => {
-  if(e.key.startsWith('Arrow')) {
-    e.preventDefault();
-    if(e.key === 'ArrowUp') setDir('up');
-    if(e.key === 'ArrowDown') setDir('down');
-    if(e.key === 'ArrowLeft') setDir('left');
-    if(e.key === 'ArrowRight') setDir('right');
-  }
-});
-function setDir(k){
-  const map = { up:{x:0,y:-1}, down:{x:0,y:1}, left:{x:-1,y:0}, right:{x:1,y:0} };
-  const nd = map[k];
-  if(!nd) return;
-  if(snake.body.length > 1 && snake.body[0].x + nd.x === snake.body[1].x && snake.body[0].y + nd.y === snake.body[1].y) return;
-  snake.dir = nd; autoMode = false; // manual override
-}
-
-/* reset & mute (no default music included offline) */
-document.getElementById('reset').addEventListener('click', () => {
-  clearInterval(timer);
-  snake = { body: [{x:5,y:8},{x:4,y:8},{x:3,y:8}], dir: {x:1,y:0} };
-  score = 0; scoreEl.textContent = 'Score: 0';
-  speed = baseSpeed; running = true; autoMode = false; highlight = 0; apple = null;
-  document.getElementById('popup').classList.remove('show'); document.getElementById('finale').classList.remove('show');
-  timer = setInterval(tick, speed);
-});
-document.getElementById('mute').addEventListener('click', () => {
-  const a = document.getElementById('bg');
-  if(a){ if(a.paused) a.play(); else a.pause(); }
-});
-
-/* game over */
-function gameOver(){
-  running = false; clearInterval(timer);
-  popupImg.src = messages[score % messages.length].img || '';
-  popupMsg.textContent = 'Game Over 💥';
-  popupSub.textContent = 'Tap Reset to try again';
-  popup.classList.add('show');
-}
-
-// Automatically place the next food randomly after the current one is eaten
-function placeRandomApple() {
+function placeRandomApple(){
   const c = cells();
   let gx, gy;
   do {
     gx = rnd(c.x);
     gy = rnd(c.y);
-  } while (snake.body.some(p => p.x === gx && p.y === gy)); // Ensure it doesn't overlap with the snake
+  } while (snake.body.some(p => p.x === gx && p.y === gy));
   apple = { x: gx, y: gy };
   highlight = 28;
 }
 
-// Modify the tick function to automatically place the next apple
 function tick(){
   if(!running) return;
-  if(autoMode){
-    snake.dir = chooseDirTowardApple();
-  }
+  if(autoMode) snake.dir = chooseDirTowardApple();
   const head = { x: snake.body[0].x + snake.dir.x, y: snake.body[0].y + snake.dir.y };
   const c = cells();
   head.x = (head.x + c.x) % c.x; head.y = (head.y + c.y) % c.y;
-  // collision with self
   if(snake.body.slice(1).some(p => p.x===head.x && p.y===head.y)){ gameOver(); return; }
   snake.body.unshift(head);
 
-  // eat?
   if(apple && head.x===apple.x && head.y===apple.y){
     score++; scoreEl.textContent = 'Score: ' + score;
     autoMode = false;
     showPopupFor(score-1);
     apple = null;
-    // if finished
-    if(score >= MAX_EATS){
-      clearInterval(timer);
-      setTimeout(()=> { finalWish(); }, 900);
-      return;
-    }
-    // Automatically place the next apple
+    if(score >= MAX_EATS){ clearInterval(timer); finalWish(); return; }
     placeRandomApple();
   } else {
     snake.body.pop();
   }
 
-  // render
   ctx.clearRect(0,0,gameCanvas.width, gameCanvas.height);
   confCtx.clearRect(0,0,confCanvas.width, confCanvas.height);
-
-  // subtle grid background
   for(let x=0;x<gameCanvas.width/grid;x++){
     for(let y=0;y<gameCanvas.height/grid;y++){
       ctx.fillStyle = ((x+y)%2) ? '#061126' : '#071028';
       ctx.fillRect(x*grid, y*grid, grid, grid);
     }
   }
-
   if(highlight>0) { drawApple(); highlight--; } else drawApple();
   drawSnake();
-  if (audio.paused) {
-    audio.play();
-  }
+  if(audio.paused) audio.play();
 }
 
-// Add background music
+function finalWish(){ finaleEl.classList.add('show'); }
+function gameOver(){
+  running = false; clearInterval(timer);
+  popupMsg.textContent = 'Game Over 💥';
+  popup.classList.add('show');
+}
+
+gameCanvas.addEventListener('click', e => {
+  if(autoMode) return;
+  const rect = gameCanvas.getBoundingClientRect();
+  const gx = Math.floor((e.clientX - rect.left) * (gameCanvas.width / rect.width) / grid);
+  const gy = Math.floor((e.clientY - rect.top) * (gameCanvas.height / rect.height) / grid);
+  if(snake.body.some(p => p.x===gx && p.y===gy)) return;
+  apple = { x: gx, y: gy }; highlight = 28; autoMode = true;
+});
+
+document.getElementById('reset').addEventListener('click', () => {
+  clearInterval(timer);
+  snake = { body: [{x:5,y:8},{x:4,y:8},{x:3,y:8}], dir: {x:1,y:0} };
+  score = 0; scoreEl.textContent = 'Score: 0';
+  running = true; autoMode = false; highlight = 0; apple = null;
+  document.getElementById('popup').classList.remove('show'); document.getElementById('finale').classList.remove('show');
+  fitCanvas();
+  timer = setInterval(tick, speed);
+});
+
+document.getElementById('mute').addEventListener('click', () => { if(audio.paused) audio.play(); else audio.pause(); });
+
+const popup = document.getElementById('popup');
+const popupImg = document.getElementById('popupImg');
+const popupMsg = document.getElementById('popupMsg');
+const popupSub = document.getElementById('popupSub');
+const finaleEl = document.getElementById('finale');
+
 const audio = document.createElement('audio');
 audio.id = 'bg';
 audio.src = 'ssstik-io-1735883903828-2-65529.mp3';
@@ -454,41 +282,11 @@ audio.loop = true;
 audio.volume = 0.5;
 document.body.appendChild(audio);
 audio.play();
-// Add name at the top
-const topDiv = document.createElement('div');
-topDiv.style.textAlign = 'center';
-topDiv.style.marginBottom = '10px';
-topDiv.style.color = '#ffd166';
-topDiv.style.fontWeight = 'bold';
-topDiv.textContent = 'Created by Lingesh';
-document.body.insertBefore(topDiv, document.body.firstChild);
 
-// Add name at the bottom
-const bottomDiv = document.createElement('div');
-bottomDiv.style.textAlign = 'center';
-bottomDiv.style.marginTop = '20px';
-bottomDiv.style.color = '#ffd166';
-bottomDiv.style.fontWeight = 'bold';
-bottomDiv.textContent = 'Made by Lingesh';
-document.body.appendChild(bottomDiv);
-/* start */
-popup.style.position = 'absolute';
-popup.style.top = '50%';
-popup.style.left = '50%';
-popup.style.transform = 'translate(-50%, -50%)';
-popup.style.width = '100%';
-popup.style.height = '100%';
-popup.style.display = 'flex';
-popup.style.alignItems = 'center';
-popup.style.justifyContent = 'center';
 fitCanvas();
-spawnInitial();
-function spawnInitial(){
-  apple = null; waitingForTap = true; autoMode = false;
-  timer = setInterval(tick, speed);
-}
-window.addEventListener('resize', ()=>{ setTimeout(()=>{ fitCanvas(); }, 80); });
-
+placeRandomApple();
+timer = setInterval(tick, speed);
 </script>
 </body>
 </html>
+

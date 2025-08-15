@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>Birthday Snake — Tap & Reveal (Offline)</title>
 <style>
   :root{
@@ -18,6 +18,8 @@
     background:radial-gradient(800px 600px at 10% 10%, #10203b 0%, #071025 35%, #04101b 100%);
     display:flex;
     flex-direction:column;
+    overflow: hidden;
+    touch-action: manipulation;
   }
   .wrap{
     flex:1;
@@ -25,6 +27,7 @@
     flex-direction:column;
     justify-content:space-between;
     max-width:100%;
+    max-height: calc(100vh - 120px);
     margin:0 auto;
     padding:8px;
     box-sizing:border-box;
@@ -32,31 +35,130 @@
     background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
     border:1px solid rgba(255,255,255,0.03);
     box-shadow:0 20px 50px rgba(0,0,0,0.6);
+    overflow: hidden;
   }
   .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
   .title{font-weight:700;font-size:1.05rem}
   .subtitle{font-size:.83rem;opacity:.85}
   .score{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);font-weight:600}
-  .canvas-wrap{flex:1;display:flex;justify-content:center;align-items:center;padding:4px 0}
-  canvas{border-radius:12px;background:linear-gradient(180deg,#06102b,#07102b);display:block;width:100%;height:auto;max-width:380px;box-shadow:inset 0 6px 18px rgba(0,0,0,0.5)}
-  .controls{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:4px}
-  .btn{background:var(--glass);border:1px solid rgba(255,255,255,0.03);color:inherit;padding:8px 12px;border-radius:10px;cursor:pointer}
+  .canvas-wrap{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:4px 0;
+    min-height: 200px;
+  }
+  canvas{
+    border-radius:12px;
+    background:linear-gradient(180deg,#06102b,#07102b);
+    display:block;
+    width:100%;
+    height:100%;
+    max-width:380px;
+    box-shadow:inset 0 6px 18px rgba(0,0,0,0.5)
+  }
+  .controls{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:4px
+  }
+  .btn{
+    background:var(--glass);
+    border:1px solid rgba(255,255,255,0.03);
+    color:inherit;
+    padding:8px 12px;
+    border-radius:10px;
+    cursor:pointer
+  }
   /* Popup */
-  .popup{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .22s;z-index:50}
-  .popup.show{pointer-events:auto;opacity:1}
-  .card-pop{width:min(92%,420px);max-width:380px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border-radius:14px;padding:12px;border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(6px);box-shadow:0 14px 40px rgba(0,0,0,0.6)}
-  .card-pop img{width:100%;height:210px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.04)}
-  .pop-title{font-family:system-ui;font-size:1.3rem;color:#ffe9f3;margin-top:8px}
-  .pop-sub{opacity:.9;margin-top:6px;font-size:.95rem;color:#ffdfe9}
+  .popup{
+    position:fixed;
+    inset:0;
+    display:grid;
+    place-items:center;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .22s;
+    z-index:50
+  }
+  .popup.show{
+    pointer-events:auto;
+    opacity:1
+  }
+  .card-pop{
+    width:min(92%,420px);
+    max-width:380px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border-radius:14px;
+    padding:12px;
+    border:1px solid rgba(255,255,255,0.06);
+    backdrop-filter:blur(6px);
+    box-shadow:0 14px 40px rgba(0,0,0,0.6)
+  }
+  .card-pop img{
+    width:100%;
+    height:210px;
+    object-fit:cover;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.04)
+  }
+  .pop-title{
+    font-family:system-ui;
+    font-size:1.3rem;
+    color:#ffe9f3;
+    margin-top:8px
+  }
+  .pop-sub{
+    opacity:.9;
+    margin-top:6px;
+    font-size:.95rem;
+    color:#ffdfe9
+  }
   /* Finale */
-  .finale{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .3s;z-index:60}
-  .finale.show{opacity:1}
-  .finale .text{font-family: system-ui; font-size:2.6rem;background:linear-gradient(90deg,#ffd166,#ff6b9e,#9b5cff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 6px 30px rgba(0,0,0,0.6)}
-  @media (max-width:420px){ .card-pop img{height:160px} .finale .text{font-size:2.1rem} }
+  .finale{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .3s;
+    z-index:60
+  }
+  .finale.show{
+    opacity:1
+  }
+  .finale .text{
+    font-family: system-ui;
+    font-size:2.6rem;
+    background:linear-gradient(90deg,#ffd166,#ff6b9e,#9b5cff);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    text-shadow:0 6px 30px rgba(0,0,0,0.6)
+  }
+  @media (max-width:420px){
+    .card-pop img{height:160px}
+    .finale .text{font-size:2.1rem}
+    .title{font-size:0.9rem}
+    .subtitle{font-size:0.7rem}
+  }
+  .creator{
+    text-align:center;
+    margin:6px 0;
+    color:#ffd166;
+    font-weight:bold;
+    font-size:0.9rem;
+  }
 </style>
 </head>
 <body>
-  <div style="text-align:center;margin:6px 0;color:#ffd166;font-weight:bold;">Created by Lingesh</div>
+  <div class="creator">Created by Lingesh</div>
   <div class="wrap" role="application" aria-label="Birthday Snake Game">
     <div class="top">
       <div>
@@ -77,7 +179,6 @@
       <button id="mute" class="btn">Music ♪</button>
     </div>
   </div>
-  <div style="text-align:center;margin:6px 0;color:#ffd166;font-weight:bold;">Made by Lingesh</div>
 
   <!-- popup + finale -->
   <div id="popup" class="popup" aria-hidden="true">
@@ -109,14 +210,18 @@ function fitCanvas(){
   const headerH = document.querySelector('.top').offsetHeight;
   const controlsH = document.querySelector('.controls').offsetHeight;
   const availableHeight = window.innerHeight - headerH - controlsH - 60;
-  const maxW = Math.min(window.innerWidth - 16, 380);
-  const maxH = Math.max(availableHeight, 200);
-  const cols = Math.max(12, Math.floor(maxW / grid));
-  const rows = Math.max(14, Math.floor(maxH / grid));
-  gameCanvas.width = cols * grid;
-  gameCanvas.height = rows * grid;
-  confCanvas.width = gameCanvas.width;
-  confCanvas.height = gameCanvas.height;
+  
+  // Set minimum dimensions
+  const minWidth = Math.min(window.innerWidth - 16, 380);
+  const minHeight = Math.max(200, availableHeight);
+  
+  gameCanvas.width = minWidth;
+  gameCanvas.height = minHeight;
+  confCanvas.width = minWidth;
+  confCanvas.height = minHeight;
+  
+  // Recalculate grid size based on available space
+  grid = Math.min(18, Math.floor(Math.min(minWidth/12, minHeight/14)));
 }
 window.addEventListener('resize', fitCanvas);
 
@@ -248,14 +353,22 @@ function gameOver(){
   popup.classList.add('show');
 }
 
-gameCanvas.addEventListener('click', e => {
+function handleTap(e) {
   if(autoMode) return;
   const rect = gameCanvas.getBoundingClientRect();
-  const gx = Math.floor((e.clientX - rect.left) * (gameCanvas.width / rect.width) / grid);
-  const gy = Math.floor((e.clientY - rect.top) * (gameCanvas.height / rect.height) / grid);
+  const clientX = e.clientX || e.touches[0].clientX;
+  const clientY = e.clientY || e.touches[0].clientY;
+  const gx = Math.floor((clientX - rect.left) * (gameCanvas.width / rect.width) / grid);
+  const gy = Math.floor((clientY - rect.top) * (gameCanvas.height / rect.height) / grid);
   if(snake.body.some(p => p.x===gx && p.y===gy)) return;
   apple = { x: gx, y: gy }; highlight = 28; autoMode = true;
-});
+}
+
+gameCanvas.addEventListener('click', handleTap);
+gameCanvas.addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  handleTap(e);
+}, { passive: false });
 
 document.getElementById('reset').addEventListener('click', () => {
   clearInterval(timer);
